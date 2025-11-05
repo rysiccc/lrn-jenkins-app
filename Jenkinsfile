@@ -45,8 +45,8 @@ pipeline {
             steps {
                 sh '''
                     npm install -g serve
-                    nohup serve -s build -l 3000 > serve.log 2>&1 &
-                    sleep 3
+                    serve -s build &
+                    sleep 10
                     npx playwright test
                 '''
             }
