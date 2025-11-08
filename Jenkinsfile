@@ -23,7 +23,7 @@ pipeline {
         stage('Run tests') {
             parallel {
 
-                stage('Test') {
+                stage('Unit') {
                     agent {
                         docker {
                             image 'node:18-alpine'
@@ -36,8 +36,12 @@ pipeline {
                             npm test
                         '''
                     }
+                    post{
+                        always {
+                            junit 'jest-results/junit.xml'
+                        }
+                    }
                 }
-
                 stage('E2E') {
                     agent {
                         docker {
@@ -54,6 +58,11 @@ pipeline {
                             npx playwright test --reporter=html
                         '''
                     }
+                    post{
+                        always {
+                            junit 'jest-results/junit.xml'
+                        }
+                    }
                 }
             }
 
@@ -62,9 +71,4 @@ pipeline {
         }
 
 
-    post{
-        always {
-            junit 'jest-results/junit.xml'
-        }
-    }
 }
