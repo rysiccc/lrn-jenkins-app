@@ -59,7 +59,6 @@ pipeline {
                             npm install -D @playwright/test@1.56.1
                             npm install -g serve
                             serve -s build &
-                            sleep 10
                             npx playwright test --reporter=html
                         '''
                     }
@@ -90,5 +89,29 @@ pipeline {
                 '''
             }
         }
+
+        stage('Prod E2E') {
+            agent {
+                docker {
+                    image 'mcr.microsoft.com/playwright:v1.56.1-noble'
+                    reuseNode true
+                }
+            }
+            environment{
+                CI_ENVIRONMENT_URL = "https://rysic.netlify.app/"
+            }
+            steps {
+                sh '''
+                    npm install -D @playwright/test@1.56.1
+                    npx playwright test --reporter=html
+                '''
+            }
+            post{
+                always {
+                    junit 'jest-results/junit.xml'
+                }
+            }
+        }
+        
     }
 }
