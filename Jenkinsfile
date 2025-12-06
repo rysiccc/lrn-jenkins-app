@@ -99,7 +99,7 @@ pipeline {
             }
 
             environment {
-                CI_ENVIRONMENT_URL = 'https://rysic.netlify.app/'
+                CI_ENVIRONMENT_URL = 'https://rysic.netlify.app'
             }
 
             steps {
