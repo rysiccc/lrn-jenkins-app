@@ -93,22 +93,24 @@ pipeline {
         stage('Prod E2E') {
             agent {
                 docker {
-                    image 'mcr.microsoft.com/playwright:v1.56.1-noble'
+                    image 'mcr.microsoft.com/playwright:v1.39.0-jammy'
                     reuseNode true
                 }
             }
-            environment{
-                CI_ENVIRONMENT_URL = "https://rysic.netlify.app/"
+
+            environment {
+                CI_ENVIRONMENT_URL = 'PUT YOUR NETLIFY SITE URL HERE'
             }
+
             steps {
                 sh '''
-                    npm install -D @playwright/test@1.56.1
-                    npx playwright test --reporter=html
+                    npx playwright test  --reporter=html
                 '''
             }
-            post{
+
+            post {
                 always {
-                    junit 'jest-results/junit.xml'
+                    publishHTML([allowMissing: false, alwaysLinkToLastBuild: false, keepAll: false, reportDir: 'playwright-report', reportFiles: 'index.html', reportName: 'Playwright E2E', reportTitles: '', useWrapperFileDirectly: true])
                 }
             }
         }
