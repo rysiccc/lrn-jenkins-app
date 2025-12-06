@@ -89,6 +89,14 @@ pipeline {
                 '''
             }
         }
+        
+        stage('Approval') {
+            steps {
+                timeout(time: 1, unit: 'HOURS') {
+                    input message: 'Jedziemy?', ok: 'GO!!!!'
+                }
+            }
+        }
 
         stage('Deploy prod') {
             agent {
