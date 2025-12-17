@@ -71,28 +71,6 @@ pipeline {
             }
         }
 
-        stage('Deploy staging') {
-            agent {
-                docker {
-                    image 'node:18-alpine'
-                    reuseNode true
-                }
-            }
-            steps {
-                sh '''
-                    npm install netlify-cli@20.1.1 node-jq -g 
-                    netlify --version
-                    echo "Deploy to staging. Site ID: $NETLIFY_SITE_ID"
-                    netlify status
-                    netlify deploy --dir=build --json > deploy-output.json
-                '''
-                script {
-                    env.STAGING_URL = sh(script: "node-jq -r '.deploy_url' deploy-output.json", returnStdout: true)
-                }
-            }
-            
-        }
-
         stage('Staging E2E') {
             agent {
                 docker {
@@ -107,6 +85,12 @@ pipeline {
 
             steps {
                 sh '''
+                    npm install netlify-cli@20.1.1 node-jq -g 
+                    netlify --version
+                    echo "Deploy to staging. Site ID: $NETLIFY_SITE_ID"
+                    netlify status
+                    netlify deploy --dir=build --json > deploy-output.json
+                    CI_ENVIRONMENT_URL=$(node-jq -r '.deploy_url' deploy-output.json)
                     npx playwright test  --reporter=html
                 '''
             }
