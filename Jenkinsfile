@@ -4,6 +4,8 @@ pipeline {
     environment {
         NETLIFY_SITE_ID = '5fbca519-17c9-47b1-be72-c36deea8a68e'
         NETLIFY_AUTH_TOKEN = credentials('netlify-token')
+        REACT_APP_VERSION = "1.2.3"
+        //"${sh(script: 'git rev-parse --short HEAD', returnStdout: true).trim()}"
     }
 
     stages {
@@ -102,15 +104,6 @@ pipeline {
             }
         }
         
-        stage('Approval') {
-            steps {
-                timeout(time: 1, unit: 'HOURS') {
-                    input message: 'Test befere deploy to prod?', ok: 'Tested. Working!'
-                }
-            }
-        }
-
-
         stage('Prod - Deploy & E2E') {
             agent {
                 docker {
