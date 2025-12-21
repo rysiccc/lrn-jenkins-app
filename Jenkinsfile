@@ -9,6 +9,14 @@ pipeline {
     }
 
     stages {
+        stage('Build Playwright Docker image') {
+            agent any
+            steps {
+                sh '''
+                    docker build -t my-playwright:latest -f Dockerfile .
+                '''
+            }
+        }
         stage('Build') {
             agent {
                 docker {
@@ -52,14 +60,12 @@ pipeline {
                 stage('E2E') {
                     agent {
                         docker {
-                            image 'mcr.microsoft.com/playwright:v1.56.1-noble'
+                            image 'my-playwright:latest'
                             reuseNode true
                         }
                     }
                     steps {
                         sh '''
-                            npm install -D @playwright/test@1.56.1
-                            npm install -g serve
                             serve -s build &
                             npx playwright test --reporter=html
                         '''
@@ -76,7 +82,7 @@ pipeline {
         stage('Staging E2E') {
             agent {
                 docker {
-                    image 'mcr.microsoft.com/playwright:v1.56.1-noble'
+                    image 'my-playwright:latest'
                     reuseNode true
                 }
             }
@@ -87,7 +93,6 @@ pipeline {
 
             steps {
                 sh '''
-                    npm install netlify-cli@20.1.1 node-jq -g 
                     netlify --version
                     echo "Deploy to staging. Site ID: $NETLIFY_SITE_ID"
                     netlify status
@@ -107,7 +112,7 @@ pipeline {
         stage('Prod - Deploy & E2E') {
             agent {
                 docker {
-                    image 'mcr.microsoft.com/playwright:v1.56.1-noble'
+                    image 'my-playwright:latest'
                     reuseNode true
                 }
             }
@@ -118,7 +123,6 @@ pipeline {
 
             steps {
                 sh '''
-                    npm install netlify-cli@20.1.1 -g
                     netlify --version
                     echo "Deploy to production. Site ID: $NETLIFY_SITE_ID"
                     netlify status
