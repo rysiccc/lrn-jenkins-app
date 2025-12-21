@@ -66,6 +66,7 @@ pipeline {
                     }
                     steps {
                         sh '''
+                            npm install -D @playwright/test@1.56.1
                             serve -s build &
                             npx playwright test --reporter=html
                         '''
