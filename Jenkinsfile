@@ -19,10 +19,14 @@ pipeline {
                 }
             }
             steps {
-                sh '''
-                    aws --version
-                    aws sts get-caller-identity
-                '''
+                withCredentials([usernamePassword(credentialsId: 'my-aws', passwordVariable: 'AWS_SECRET_ACCESS_KEY', usernameVariable: 'AWS_ACCESS_KEY_ID')]) {
+                    sh '''
+                        aws --version
+                        aws sts get-caller-identity
+                        aws s3 ls
+                    '''
+                }
+                
             }
         }
 
