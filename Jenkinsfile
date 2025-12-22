@@ -9,14 +9,6 @@ pipeline {
     }
 
     stages {
-        stage('Build Playwright Docker image') {
-            agent any
-            steps {
-                sh '''
-                    docker build -t my-playwright:latest -f Dockerfile .
-                '''
-            }
-        }
         stage('Build') {
             agent {
                 docker {
@@ -69,6 +61,7 @@ pipeline {
                             npm install -D @playwright/test@1.56.1
                             serve -s build &
                             npx playwright test --reporter=html
+                            
                         '''
                     }
                     post{
