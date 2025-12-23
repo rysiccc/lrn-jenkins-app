@@ -23,8 +23,8 @@ pipeline {
                     sh '''
                         aws --version
                         echo "1" > text.txt
-                        aws s3 cp text.txt s3://rysic-jenkins-test/text.txt
-                        aws s3 ls s3://rysic-jenkins-test/
+                        aws s3 cp text.txt s3://lrn-jenkins-rysic/text.txt
+                        aws s3 ls s3://lrn-jenkins-rysic/
                     '''
                 }
                 
