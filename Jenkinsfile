@@ -10,26 +10,7 @@ pipeline {
 
     stages {
 
-        stage('AWS') {
-            agent {
-                docker {
-                    image 'amazon/aws-cli:latest'
-                    args '--entrypoint=""'
-                    reuseNode true
-                }
-            }
-            steps {
-                withCredentials([usernamePassword(credentialsId: 'my-aws', passwordVariable: 'AWS_SECRET_ACCESS_KEY', usernameVariable: 'AWS_ACCESS_KEY_ID')]) {
-                    sh '''
-                        aws --version
-                        echo "1" > text.txt
-                        aws s3 cp text.txt s3://lrn-jenkins-rysic/index.html
-                        aws s3 ls s3://lrn-jenkins-rysic/
-                    '''
-                }
-                
-            }
-        }
+
 
         stage('Build') {
             agent {
@@ -49,6 +30,27 @@ pipeline {
                 '''
             }
         }
+
+        stage('AWS') {
+            agent {
+                docker {
+                    image 'amazon/aws-cli:latest'
+                    args '--entrypoint=""'
+                    reuseNode true
+                }
+            }
+            steps {
+                withCredentials([usernamePassword(credentialsId: 'my-aws', passwordVariable: 'AWS_SECRET_ACCESS_KEY', usernameVariable: 'AWS_ACCESS_KEY_ID')]) {
+                    sh '''
+                        aws --version
+                        aws s3 sync build s3://lrn-jenkins-rysic/
+
+                    '''
+                }
+                
+            }
+        }
+
         stage('Run tests') {
             parallel {
 
