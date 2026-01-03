@@ -5,7 +5,7 @@ pipeline {
             agent any
             steps {
                 sh '''
-                    docker build -t my-playwright:latest -f Dockerfile .
+                    docker build -f ci/Dockerfile -t my-playwright:latest .
                 '''
             }
         }
